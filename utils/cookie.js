@@ -12,8 +12,8 @@ Cons: It introduces a new risk called CSRF (Cross-Site Request Forgery), which r
 exports.sendTokenCookie = (res, token) => {
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", //  fix this line
+    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    sameSite: "lax", // works for same domain in both dev and production
     maxAge: process.env.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
   });
 };
@@ -21,8 +21,8 @@ exports.sendTokenCookie = (res, token) => {
 exports.clearTokenCookie = (res) => {
   res.cookie("token", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", //  same options
-    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax", //  same options
-    expires: new Date(0), //  fixed — past date
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    expires: new Date(0),
   });
 };
