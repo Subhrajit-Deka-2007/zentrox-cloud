@@ -25,7 +25,7 @@ exports.loginUser = catchAsync(async (req, res, next) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role, //  needed for admin checks on frontend
+      role: user.role,
     },
   });
 });
@@ -52,11 +52,10 @@ exports.createUser = catchAsync(async (req, res, next) => {
     city,
   });
 
-  try {
-    await sendWelcomeEmail(newUser);
-  } catch (err) {
+  // ✅ fire and forget — don't await so registration responds immediately
+  sendWelcomeEmail(newUser).catch((err) => {
     console.error("Welcome email failed:", err.message);
-  }
+  });
 
   newUser.password = undefined;
   const token = createToken(newUser._id, newUser.role);
@@ -64,12 +63,12 @@ exports.createUser = catchAsync(async (req, res, next) => {
 
   return res.status(201).json({
     status: "success",
-    message: "Account created successfully! Check your email! 📧",
+    message: "Account created successfully!",
     user: {
       _id: newUser._id,
       name: newUser.name,
       email: newUser.email,
-      role: newUser.role, //  needed for admin checks on frontend
+      role: newUser.role,
     },
   });
 });
